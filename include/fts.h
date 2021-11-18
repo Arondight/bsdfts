@@ -35,7 +35,43 @@
 #ifndef	_FTS_H_
 #define	_FTS_H_
 
-#include <sys/_types.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+//
+// Use Linux API
+//
+// "((flag) = (flag))" to pass gcc's unused-but-set-variable check
+// In FreeBSD we have "#define __opendir2(path, flag) opendir(path)"
+// https://github.com/freebsd/freebsd-src/blob/373ffc6/lib/libc/gen/fts-compat.c#L653
+#define __opendir2(path, flag)        (((flag) = (flag)), (opendir((path))))
+#define _close(fd)                    (close((fd)))
+#define _dirfd(dirp)                  (dirfd((dirp)))
+#define _fstat(fd, statbuf)           (fstat((fd), (statbuf)))
+#define _open(pathname, flags, mode)  ((pathname) ? open((pathname), (flags), (mode)) : -1)
+#define reallocf(ptr, size)           (realloc((ptr), (size)))
+// In Linux "__size_t" is a macro defined in stddef.h and not a type
+typedef size_t    __fts_size_t;
+typedef uint64_t  __dev_t;
+typedef uint64_t  __ino_t;
+typedef uint64_t  __nlink_t;
+
+//
+// From https://github.com/freebsd/freebsd-src/blob/e81e71b/sys/sys/stat.h
+//
+#define S_IFWHT         (0160000)   /* whiteout */
+
+//
+// From https://github.com/freebsd/freebsd-src/blob/373ffc6/include/dirent.h
+//
+#define DTF_HIDEW       (0x0001)    /* hide whiteout entries */
+#define DTF_NODUP       (0x0002)    /* don't return duplicate names */
+#define DTF_REWIND      (0x0004)    /* rewind after reading union stack */
+#define __DTF_READALL   (0x0008)    /* everything has been read */
+#define __DTF_SKIPREAD  (0x0010)    /* assume internal buffer is populated */
 
 typedef struct {
 	struct _ftsent *fts_cur;	/* current node */
@@ -44,8 +80,8 @@ typedef struct {
 	__dev_t fts_dev;		/* starting device # */
 	char *fts_path;			/* path for this descent */
 	int fts_rfd;			/* fd for root */
-	__size_t fts_pathlen;		/* sizeof(path) */
-	__size_t fts_nitems;		/* elements in the sort array */
+	__fts_size_t fts_pathlen;	/* sizeof(path) */
+	__fts_size_t fts_nitems;	/* elements in the sort array */
 	int (*fts_compar)		/* compare function */
 	    (const struct _ftsent * const *, const struct _ftsent * const *);
 
@@ -76,8 +112,8 @@ typedef struct _ftsent {
 	char *fts_path;			/* root path */
 	int fts_errno;			/* errno for this node */
 	int fts_symfd;			/* fd for symlink */
-	__size_t fts_pathlen;		/* strlen(fts_path) */
-	__size_t fts_namelen;		/* strlen(fts_name) */
+	__fts_size_t fts_pathlen;	/* strlen(fts_path) */
+	__fts_size_t fts_namelen;	/* strlen(fts_name) */
 
 	__ino_t fts_ino;		/* inode */
 	__dev_t fts_dev;		/* device */
