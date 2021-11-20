@@ -13,6 +13,10 @@ int main(void) {
     return -1;
   }
 
+  if (!(ftsent = fts_read(fts))) {
+    return -1;
+  }
+
   while ((ftsent = fts_read(fts))) {
     printf("%s\n", ftsent->fts_path);
   }

@@ -2,7 +2,7 @@
 
 ## ABOUT
 
-This is a port of the fts library on FreeBSD to Linux.
+Porting of fts on FreeBSD to Linux
 
 ## USAGE
 
@@ -10,14 +10,15 @@ This is a port of the fts library on FreeBSD to Linux.
 git clone https://github.com/Arondight/fts.git
 cd ./fts/
 make
-stat ./libfts.so
+sudo make install PREFIX=/usr/
+man fts
 ```
 
 ## TEST
 
 ```sh
-gcc -Wall -L. -l:./libfts.so ./test.c -o /tmp/fts_test
-LD_LIBRARY_PATH=. /tmp/fts_test
+gcc -Wall -lfts ./test.c -o /tmp/fts_test
+/tmp/fts_test
 ```
 
 ## LICENSE
