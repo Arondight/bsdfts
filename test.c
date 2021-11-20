@@ -1,4 +1,4 @@
-#include <fts.h>
+#include <bsdfts.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -14,6 +14,7 @@ int main(void) {
   }
 
   if (!(ftsent = fts_read(fts))) {
+    perror("fts_read");
     return -1;
   }
 
@@ -21,6 +22,5 @@ int main(void) {
     printf("%s\n", ftsent->fts_path);
   }
 
-  fts_close(fts);
-  return 0;
+  return fts_close(fts);
 }

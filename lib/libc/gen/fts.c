@@ -503,6 +503,7 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 int
 fts_set(FTS *sp, FTSENT *p, int instr)
 {
+	// "sp = sp" to pass gcc's -Wunused-parameter check
 	sp = sp;
 
 	if (instr != 0 && instr != FTS_AGAIN && instr != FTS_FOLLOW &&
